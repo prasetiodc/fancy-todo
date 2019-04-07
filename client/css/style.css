@@ -1,0 +1,18 @@
+#detail-todo{
+    /* border: 1px solid black;
+    background-color: blue; */
+    padding-top: 10px;
+}
+
+#listHeaderRight{
+    text-align: right;
+}
+
+#loginForm h1, #registerForm h1{
+    text-align: center;
+    margin-top: 10px;
+}
+
+#loginForm, #registerForm{
+    padding-top: 50px; 
+}
