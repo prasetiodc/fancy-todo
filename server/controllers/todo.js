@@ -15,7 +15,8 @@ class Todo{
             res.status(201).json(data)
         })
         .catch(err=>{
-            res.status(500).json(err)
+            res.status(500).json({message:"create task failed", err:err})
+            
         })
     }
 
@@ -23,10 +24,11 @@ class Todo{
         todo.find()
         .populate("userId")
         .then(data=>{
-            res.status(200).json(data)
+            res.status(200).json({message:"get task data success",data:data})
+            // else res.status(404).json({message:"task data not found",data:data})
         })
         .catch(err=>{
-            res.status(500).json(err)
+            res.status(500).json({message:"get task data failed", err:err})            
         })
     }
 
@@ -34,10 +36,11 @@ class Todo{
         todo.findById(req.params.id)
         .populate("userId")
         .then(data=>{
-            res.status(200).json(data)
+            if(data) res.status(200).json({message:"get task data success",data})
+            else res.status(404).json({message:"task data not found",data})
         })
         .catch(err=>{
-            res.status(500).json(err)
+            res.status(500).json({message:"get task data failed", err:err})
         })
     }
 
@@ -51,31 +54,32 @@ class Todo{
         }
         todo.findOneAndUpdate(req.params.id, updateTodo, {new:true} )
         .then(data=>{
-            res.status(200).json(data)
+            res.status(200).json({message:"Update Success",data})
         })
         .catch(err=>{
-            res.status(500).json(err)
+            res.status(500).json({message:"update task failed", err:err})            
         })
     }
 
-    static update(req, res){
+    static changeStatus(req, res){
+        console.log(req.params.id);
         
-        todo.findOneAndUpdate(req.params.id, updateTodo, {new:true} )
+        todo.findOneAndUpdate({_id:req.params.id}, {status:true}, {new:true} )
         .then(data=>{
-            res.status(200).json(data)
+            res.status(200).json({message:"Update Success",data})
         })
         .catch(err=>{
-            res.status(500).json(err)
+            res.status(500).json({message:"get task data failed", err:err})
         })
     }
 
     static delete(req, res){
         todo.deleteOne({_id:req.params.id})
         .then(data=>{
-            res.status(200).json("Delete Success")
+            res.status(200).json({message:"Delete Success"})
         })
         .catch(err=>{
-            res.status(500).json({err})
+            res.status(500).json({message:"delete task failed", err:err})            
         })
     }
 }

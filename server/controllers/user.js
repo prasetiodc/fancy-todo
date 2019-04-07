@@ -6,9 +6,11 @@ const jwt = require('jsonwebtoken')
 
 class User{
   static create(req, res){
+    console.log("MASUK server");
+
       // console.log(req.body.names)
       let newUser = new user({
-      name: req.body.names,
+      name: req.body.name,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password, 10)
       })

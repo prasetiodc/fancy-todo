@@ -1,6 +1,6 @@
 if(!localStorage.getItem('token')){
-  $('#loginForm').hide()
-  $('#registerForm').show()
+  $('#loginForm').show()
+  $('#registerForm').hide()
   $('#content').hide()
 }else{
   $('#loginForm').hide()
@@ -18,7 +18,7 @@ function onSignIn(googleUser) {
       token: id_token
     }
   })
-  .done(response => {    
+  .done(response => {
     localStorage.setItem('token', response) //response token hasil jwt
     $('#loginForm').hide()
     $('#content').show()
@@ -68,16 +68,21 @@ function registerForm() {
 }
 
 function register() {
-  console.log("MASUK");
+  // event.preventDefault()
+  console.log("MASUK1");
+  let name = $('#name').val()
+  let email = $('#email').val()
+  let password = $('#password').val()
   
   $.ajax({
+    url: `http://localhost:3000/api/users`,
     method: "POST",
-    url: `http://localhost:3000/api/users/`,
     data: {
-      // name: 
+      name, email, password
     }
   })
   .done(response => {    
+  console.log("MASUK2");
     $('#show-login').show()
     $('#show-register').hide()
     $('#name').val('')
@@ -85,6 +90,8 @@ function register() {
     $('#password').val('')
   })
   .fail((jqXHR, textStatus) => {
+  console.log("MASUK3");
+
     console.log(`request failed ${textStatus}`)
   })
 }
@@ -99,15 +106,18 @@ function signOut() {
 }
 
 function detailTodo(id){
+  $('#addTodo').hide()
   $('#detail-todo').empty()
   $.ajax({
     url: `http://localhost:3000/api/todo/${id}`,
     method: 'GET'
   })
-  .done(function(todo){
+  .done(function({data}){
+      let todo = data
+    
       let info = null
       let status = todo.status
-      let due_date = new Date(todo.due_date)
+      let due_date = new Date(data.due_date)
       let date = due_date.getDate()
       let month = due_date.getMonth()+1
       let year = due_date.getFullYear()
@@ -129,6 +139,8 @@ function detailTodo(id){
         month = `0${month}`
       }
 
+      console.log(status);
+      
       if(status){
         status = "Done"
       }else{
@@ -157,14 +169,32 @@ function detailTodo(id){
   })
 }
 
-function listTodo(){
+function changeStatus(id){
+  console.log(id);
+  
   $.ajax({
-    url: 'http://localhost:3000/api/todo',
-    method: 'GET'
+    url: `http://localhost:3000/api/todo/${id}`,
+    method: 'PATCH'
   })
   .done(function(response){
+    console.log("status sukses");
     
-    for(todo of response){
+    console.log(response);
+  })
+  .fail(err=>{
+    console.log(err);    
+  })
+}
+
+
+function listTodo(){  
+  $.ajax({
+    url: 'http://localhost:3000/api/todo',
+    method: 'GET',
+    headers: {token: localStorage.token}
+  })
+  .done(function(response){    
+    for(todo of response.data){
       let info = null
       let difference = Math.ceil((new Date(todo.due_date)-new Date())/(24*60*60*1000))
       if(todo.status==true){
@@ -181,8 +211,9 @@ function listTodo(){
   })
 }
 
-function addTodo(tes){
-  console.log(tes);
+function addTodo(){  
+  console.log("MASUK");
+  
   
   let name = $('#name').val()
   let description = $('#description').val()
@@ -190,23 +221,33 @@ function addTodo(tes){
   console.log(name, description, due_date);
   
   
-  $.ajax({
-    url:"http://localhost:3000/api/todo",
-    method: 'POST',
-    data: {
-      // name, description, due_date, userId
-    }
-  })
-  .done((response)=>{
-    console.log(response);
-  })
-  .fail((jqXHR, textStatus)=>{
-    // console.log(`request failed ${textStatus}`)
-    console.log(`gagal`)
-  })
+  // $.ajax({
+  //   url:"http://localhost:3000/api/todo",
+  //   method: 'POST',
+  //   data: {
+  //     name, description, due_date, userId:"5ca93bbf38fba31defd5d865", status:false
+  //   }
+  // })
+  // .done((response)=>{
+  //   console.log(response);
+  // })
+  // .fail((jqXHR, textStatus)=>{
+  //   // console.log(`request failed ${textStatus}`)
+  //   console.log(`gagal`)
+  // })
+}
+
+
+function createTodo(){
+  $('#detail-todo').empty()
+  $('#addTodo').show()
 }
 
 $(document).ready(function(){
   $('#form-login').submit(login)
   listTodo()
+  $('#addTodo').hide()
+  $('#editTodo').hide()
+
+
 })
