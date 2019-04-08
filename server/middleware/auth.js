@@ -2,4 +2,8 @@ function authentication(req, res, next){
     // if(req.head)
 }
 
-module.exports=authentication
+function authorization(req, res, next){
+    // if(req.head)
+}
+
+module.exports={authentication, authorization}

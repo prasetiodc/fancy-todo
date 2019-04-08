@@ -82,10 +82,10 @@
               <div class="collapse navbar-collapse my-2" id="navbarSupportedContent">
                   <ul class="navbar-nav mr-auto">
                   </ul>
-                  <form id="search" method="POST" class="form-inline my-2 my-lg-0 mr-sm-2">
+                  <!-- <form id="search" method="POST" class="form-inline my-2 my-lg-0 mr-sm-2">
                       <input id="what" class="form-control mr-sm-2" type="search" placeholder="Keywords" aria-label="Search">
-                      <button class="btn btn-outline-secondary my-2 my-sm-2" type="submit">Search</button>
-                  </form>
+                      <button class="btn btn-outline-secondary my-2 my-sm-2" type="submit" enabled>Search</button>
+                  </form> -->
               </div>
               <a href="#" onclick="signOut();" id="logout">Sign out</a>  
           </nav>
@@ -112,13 +112,13 @@
               <div class="col-md-6">
                   <div id="detail-todo">
                   </div>
-
+ 
                   <div id="addTodo">
                     <h1 class="justify-content-center">Add Todo</h1>
-                      <form id="form-register" onsubmit="addTodo()">
+                      <form id="form-addTodo">
                           <div class="form-group">
                               <label for="name">Name</label>
-                              <input type="text" class="form-control" id="name" placeholder="Name taks">
+                              <input type="text" class="form-control" id="nama" placeholder="Name taks">
                           </div>
                           <div class="form-group">
                                   <label for="description">Description</label>

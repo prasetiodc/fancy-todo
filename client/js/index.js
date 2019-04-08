@@ -43,25 +43,16 @@ function login(event) {
   })
   .done((response)=>{
     console.log(response);
-    
+    $('#loginForm').hide()
+    $('#content').show()
     localStorage.setItem('token', response)
   })
   .fail((jqXHR, textStatus)=>{
     console.log(`request failed ${textStatus}`)
-  })
-
-  //   .fail((err, textStatus) => {
-  //     let errors = err.responseJSON.message
-  //     swal({
-  //       text: errors,
-  //       icon: "warning",
-  //       button: "Awwttss",
-  //     });
-  //     console.log(`request failed ${textStatus}`)
-  //   })                     
+  })           
 }
 
-function registerForm() {
+function registerForm(event) {
   event.preventDefault()
   $('#registerForm').show()
   $('#loginForm').hide()
@@ -101,6 +92,8 @@ function signOut() {
   var auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(function () {
     localStorage.removeItem('token')
+    $('#loginForm').show()
+    $('#content').hide()
     console.log('User signed out.');
   });
 }
@@ -117,6 +110,7 @@ function detailTodo(id){
     
       let info = null
       let status = todo.status
+      let buttonStatus = ''
       let due_date = new Date(data.due_date)
       let date = due_date.getDate()
       let month = due_date.getMonth()+1
@@ -138,13 +132,12 @@ function detailTodo(id){
       if(month<10){
         month = `0${month}`
       }
-
-      console.log(status);
       
       if(status){
         status = "Done"
       }else{
         status = "Not yet"
+        buttonStatus = `<button type="button" class="btn btn-secondary btn-sm" onclick="changeStatus('${todo._id}')">Change Status</button>`
       }
 
       $('#detail-todo').append(`<div class="card ${info}">
@@ -154,31 +147,28 @@ function detailTodo(id){
                             <p class="card-text">Description : ${todo.description}</p>
                             <p class="card-text">Due Date : ${year}-${month}-${date}</p>
                             <p class="card-text">Status : ${status}
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="changeStatus('${todo._id}')">Change Status</button>
+                            ${buttonStatus}
                               </p>
-                            <a class="btn btn-primary" onclick='detailTodo("${todo._id}")'>Edit</a>
+                            
                         </div>
                     </div>
       `)
-    
+      // <a class="btn btn-primary" onclick='detailTodo("${todo._id}")'>Edit</a>
 
   })
   .fail(function(err){
     console.log(err);
-    
   })
 }
 
-function changeStatus(id){
-  console.log(id);
-  
+function changeStatus(id){  
   $.ajax({
     url: `http://localhost:3000/api/todo/${id}`,
     method: 'PATCH'
   })
   .done(function(response){
     console.log("status sukses");
-    
+    listTodo()    
     console.log(response);
   })
   .fail(err=>{
@@ -188,6 +178,8 @@ function changeStatus(id){
 
 
 function listTodo(){  
+  $('#list-todo').empty()
+
   $.ajax({
     url: 'http://localhost:3000/api/todo',
     method: 'GET',
@@ -211,32 +203,36 @@ function listTodo(){
   })
 }
 
-function addTodo(){  
-  console.log("MASUK");
+function addTodo(event){  
+  event.preventDefault()
   
-  
-  let name = $('#name').val()
+  let name = $('#nama').val()
   let description = $('#description').val()
   let due_date = $('#due_date').val()
-  console.log(name, description, due_date);
+  let userId = "5ca93bbf38fba31defd5d865"
+  let status = false
+      // name, description, due_date, userId:"5ca93bbf38fba31defd5d865", status:false
+      console.log(name, description, due_date, userId, status);
   
-  
-  // $.ajax({
-  //   url:"http://localhost:3000/api/todo",
-  //   method: 'POST',
-  //   data: {
-  //     name, description, due_date, userId:"5ca93bbf38fba31defd5d865", status:false
-  //   }
-  // })
-  // .done((response)=>{
-  //   console.log(response);
-  // })
-  // .fail((jqXHR, textStatus)=>{
-  //   // console.log(`request failed ${textStatus}`)
-  //   console.log(`gagal`)
-  // })
+  $.ajax({
+    url:"http://localhost:3000/api/todo",
+    method: 'POST',
+    data: {
+      name, description, due_date, userId, status
+    }
+  })
+  .done((response)=>{
+    $('#nama').val('')
+    $('#description').val('')
+    $('#due_date').val('')
+    listTodo()
+    console.log(response);
+  })
+  .fail((jqXHR, textStatus)=>{
+    // console.log(`request failed ${textStatus}`)
+    console.log(`gagal`)
+  })
 }
-
 
 function createTodo(){
   $('#detail-todo').empty()
@@ -245,9 +241,10 @@ function createTodo(){
 
 $(document).ready(function(){
   $('#form-login').submit(login)
+  $('#form-addTodo').submit(addTodo)
+  $('#registerForm').submit(register)
+
   listTodo()
   $('#addTodo').hide()
   $('#editTodo').hide()
-
-
 })
