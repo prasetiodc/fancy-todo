@@ -40,7 +40,7 @@ class User{
     })
     .then((foundUser) => {
       if (foundUser) {  
-        const token = jwt.sign({name: payload.name, email: payload.email},process.env.SECRET_KEY)     //JWT
+        const token = jwt.sign({name: payload.name, email: payload.email},process.env.SECRET_KEY, { expiresIn: '24h' })     //JWT
         res.status(200).json(token)
       } else {
         
@@ -51,7 +51,7 @@ class User{
         })
         user.create(newUser)          
         .then(data=>{
-          const token = jwt.sign({name: payload.name, email: payload.email},process.env.SECRET_KEY)     //JWT
+          const token = jwt.sign({name: payload.name, email: payload.email},process.env.SECRET_KEY, { expiresIn: '24h' })     //JWT
           res.status(200).json(token)
         })
         
@@ -74,9 +74,9 @@ class User{
       if (found) {
         if(bcrypt.compareSync(req.body.password, found.password)) {
           let token = jwt.sign({
-            name: req.body.name,
-            email: req.body.email
-          }, process.env.SECRET_KEY)          
+            id: found._id,
+            email: found.email
+          }, process.env.SECRET_KEY, { expiresIn: '24h' })          
           res.status(200).json(token)
         } else {
           console.log("MASUK 1");

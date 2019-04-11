@@ -1,14 +1,17 @@
 const todo = require('../models/todo')
 const user = require('../models/user')
+const jwt = require('jsonwebtoken')
 
 class Todo{
     static create(req, res){
+        let decoded = jwt.verify(req.headers.authorization , process.env.SECRET_KEY);   
+        
         let newTodo = new todo({
             name: req.body.name,
             description: req.body.description,
             status: false,
             due_date: req.body.due_date,
-            userId: req.body.userId
+            userId: decoded.id
         })
         todo.create(newTodo)
         .then(data=>{

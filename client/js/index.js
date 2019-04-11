@@ -87,7 +87,6 @@ function register() {
   })
 }
 
-
 function signOut() {
   var auth2 = gapi.auth2.getAuthInstance();
   auth2.signOut().then(function () {
@@ -103,7 +102,10 @@ function detailTodo(id){
   $('#detail-todo').empty()
   $.ajax({
     url: `http://localhost:3000/api/todo/${id}`,
-    method: 'GET'
+    method: 'GET',
+    headers: {
+      authorization : localStorage.token
+    }
   })
   .done(function({data}){
       let todo = data
@@ -150,10 +152,10 @@ function detailTodo(id){
                             ${buttonStatus}
                               </p>
                             
+                              <a class="btn btn-primary" onclick='editTodo("${todo._id}")'>Edit</a>
                         </div>
                     </div>
       `)
-      // <a class="btn btn-primary" onclick='detailTodo("${todo._id}")'>Edit</a>
 
   })
   .fail(function(err){
@@ -175,7 +177,6 @@ function changeStatus(id){
     console.log(err);    
   })
 }
-
 
 function listTodo(){  
   $('#list-todo').empty()
@@ -209,10 +210,7 @@ function addTodo(event){
   let name = $('#nama').val()
   let description = $('#description').val()
   let due_date = $('#due_date').val()
-  let userId = "5ca93bbf38fba31defd5d865"
   let status = false
-      // name, description, due_date, userId:"5ca93bbf38fba31defd5d865", status:false
-      console.log(name, description, due_date, userId, status);
   
   $.ajax({
     url:"http://localhost:3000/api/todo",

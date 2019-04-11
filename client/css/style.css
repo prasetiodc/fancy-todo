@@ -5,7 +5,11 @@
 }
 
 #listHeaderRight{
+    margin-top: 10px; 
     text-align: right;
+}
+#listHeaderLeft{
+    margin-top: 10px; 
 }
 
 #loginForm h1, #registerForm h1{
@@ -15,4 +19,10 @@
 
 #loginForm, #registerForm{
     padding-top: 50px; 
+}
+
+#list-todo{
+    height: 400px;
+    overflow: scroll;
+    margin-top: 10px;
 }
