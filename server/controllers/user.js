@@ -3,16 +3,15 @@ const bcrypt = require('bcryptjs')
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.CLIENT_ID)
 const jwt = require('jsonwebtoken')
+const {hash, compare} = require('../helpers/bcrypt')
+const {sign, verify} = require('../helpers/jwt')
 
 class User{
   static create(req, res){
-    console.log("MASUK server");
-
-      // console.log(req.body.names)
       let newUser = new user({
-      name: req.body.name,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 10)
+        name: req.body.name,
+        email: req.body.email,
+        password: hash(req.body.password)
       })
       user.create(newUser)
 
@@ -40,18 +39,17 @@ class User{
     })
     .then((foundUser) => {
       if (foundUser) {  
-        const token = jwt.sign({name: payload.name, email: payload.email},process.env.SECRET_KEY, { expiresIn: '24h' })     //JWT
+        const token = sign({id: foundUser._id, name: foundUser.name, email: foundUser.email})
         res.status(200).json(token)
       } else {
-        
         let newUser = new user({
           name: payload.name,
           email: payload.email,
-          password: bcrypt.hashSync("password123", 10)
+          password: hash(Math.floor(Math.random()*1000000000000))
         })
         user.create(newUser)          
         .then(data=>{
-          const token = jwt.sign({name: payload.name, email: payload.email},process.env.SECRET_KEY, { expiresIn: '24h' })     //JWT
+          const token = sign({name: payload.name, email: payload.email})
           res.status(200).json(token)
         })
         
@@ -64,34 +62,26 @@ class User{
   }
 
   static login(req, res){
-    // console.log("req.body  ",req.body);
-    
     user.findOne({
       email:req.body.email
     })
     .then(found => {
       
       if (found) {
-        if(bcrypt.compareSync(req.body.password, found.password)) {
-          let token = jwt.sign({
+        if(compare(req.body.password, found.password)) {
+          let token = sign({
             id: found._id,
             email: found.email
-          }, process.env.SECRET_KEY, { expiresIn: '24h' })          
+          })          
           res.status(200).json(token)
-        } else {
-          console.log("MASUK 1");
-          
+        } else {          
           res.status(400).json({message: `Wrong Username/Password`})
         }
       } else {
-        console.log("MASUK 2");
-
         res.status(400).json({message: `Wrong Username/Password`})
       }
     })
     .catch(err => {
-      console.log("MASUK 3");
-
       res.status(500).json(err.message)
     })
   }

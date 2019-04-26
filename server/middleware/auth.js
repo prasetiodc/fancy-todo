@@ -1,9 +1,9 @@
 const User = require('../models/user') 
 const Todo = require('../models/todo') 
-const jwt = require('jsonwebtoken')
+const {verify} = require('../helpers/jwt')
 
 function authentication(req, res, next){
-    let decoded = jwt.verify(req.headers.authorization , process.env.SECRET_KEY);     
+    let decoded = verify(req.headers.token);     
     
     User.findOne({email : decoded.email})
     .then(userFound=>{ 
@@ -12,7 +12,6 @@ function authentication(req, res, next){
             next()
         }else{
             res.status(401).json({message: 'Unauthorized'})
-            res
         }       
     })
     .catch(err=>{

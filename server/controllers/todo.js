@@ -4,14 +4,12 @@ const jwt = require('jsonwebtoken')
 
 class Todo{
     static create(req, res){
-        let decoded = jwt.verify(req.headers.authorization , process.env.SECRET_KEY);   
-        
         let newTodo = new todo({
             name: req.body.name,
             description: req.body.description,
             status: false,
             due_date: req.body.due_date,
-            userId: decoded.id
+            userId: req.body.userId
         })
         todo.create(newTodo)
         .then(data=>{
@@ -51,11 +49,9 @@ class Todo{
         let updateTodo = {
             name: req.body.name,
             description: req.body.description,
-            status: req.body.status,
             due_date: req.body.due_date,
-            userId: req.body.userId
         }
-        todo.findOneAndUpdate(req.params.id, updateTodo, {new:true} )
+        todo.findByIdAndUpdate(req.params.id, updateTodo, {new:true} )
         .then(data=>{
             res.status(200).json({message:"Update Success",data})
         })
@@ -65,8 +61,6 @@ class Todo{
     }
 
     static changeStatus(req, res){
-        console.log(req.params.id);
-        
         todo.findOneAndUpdate({_id:req.params.id}, {status:true}, {new:true} )
         .then(data=>{
             res.status(200).json({message:"Update Success",data})
